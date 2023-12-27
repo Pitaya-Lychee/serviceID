@@ -9,8 +9,29 @@ import (
 )
 
 func main() {
-	url_80 := "https://weapons.ke.com/mock/14164/api/serviceid"
-	url_no80 := "https://weapons.ke.com/mock/4013/api/application/get_application_by_ip_and_port"
+	source := "polaris"
+	token := "acc16c5dafdf295a7e396d3c99e770f8"
+	var secret string
+	var op string
+	var url string
+	args := os.Args[1:]
+	if len(args) != 1 {
+		fmt.Println("请加入dev或者test参数表示环境!")
+		return
+	} else if len(args) == 1 && args[0] == "dev" {
+		fmt.Println("开始进行dev环境下的ServiceId对齐...")
+		op = "dev"
+		url = "http://api.cloud.intra.ke.com"
+	} else if len(args) == 1 && args[0] == "test" {
+		fmt.Println("开始进行test环境下的ServiceId对齐...")
+		op = "test"
+		url = "http://dev.old-cloud.intra.ke.com"
+	} else {
+		fmt.Println("请加入dev或者test参数表示环境!")
+		return
+	}
+	url80 := url + "/api/serviceid"
+	url_no80 := url + "/api/application/get_application_by_ip_and_port"
 	RelationMap := make(map[string]string)
 	var cfgFile string = "./hello.xml"
 	xmlFile, err := os.Open(cfgFile)
@@ -45,14 +66,14 @@ func main() {
 					ip := instance.IP
 					port := instance.Port
 					if port == "8080" {
-						serviceIDCloud := ipQuery80(ip, url_80)
+						serviceIDCloud := ipQuery80(ip, url80, source, secret, token)
 						if serviceIDCloud != "" {
 							RelationMapLock.Lock()
 							RelationMap[instance.Service_id_Polaris] = serviceIDCloud
 							RelationMapLock.Unlock()
 						}
 					} else {
-						serviceIDCloud := ipQuery_no80(ip, port, url_no80)
+						serviceIDCloud := ipQuery_no80(ip, port, url_no80, source, secret, token)
 						if serviceIDCloud != "" {
 							RelationMapLock.Lock()
 							RelationMap[instance.Service_id_Polaris] = serviceIDCloud
@@ -77,6 +98,6 @@ func main() {
 		log.Fatal("数据库连接失败:", err)
 	}
 	defer db.Close()
-	delete_exec(db)
-	insert_exec(db, RelationMap)
+	delete_exec(db, op)
+	insert_exec(db, RelationMap, op)
 }
