@@ -1,19 +1,5 @@
 package main
 
-// type ServiceList_query struct {
-// 	TimeStamp string `json:"timestamp"`
-// 	Token     string `json:"token"`
-// 	Source    string `json:"source"`
-// 	Signature string `json:"signature"`
-// 	PodIp     string `json:"podIp"`
-// }
-
-// type ServiceList_response struct {
-// 	Code    string                 `json:"code"`
-// 	Message string                 `json:"message"`
-// 	Data    map[string]interface{} `json:"data"`
-// }
-
 type AllResponse80 struct {
 	Code    string               `json:"code"`
 	Message string               `json:"message"`
@@ -21,9 +7,9 @@ type AllResponse80 struct {
 }
 
 type AllResponse_no80 struct {
-	Code    string                  `json:"code"`
-	Message string                  `json:"message"`
-	Data    *ServiceIdResponse_no80 `json:"data"`
+	Code    string             `json:"code"`
+	Message string             `json:"message"`
+	Data    *ResponseData_no80 `json:"data"`
 }
 
 type iportQuery80 struct {
@@ -52,10 +38,4 @@ type ResponseData_no80 struct {
 	DomainList []string `json:"domain_list"`
 	ServerList []string `json:"server_list"`
 	PortList   []int    `json:"port_list"`
-}
-
-type ServiceIdResponse_no80 struct {
-	Code    string             `json:"code"`
-	Message string             `json:"message"`
-	Data    *ResponseData_no80 `json:"data"`
 }
